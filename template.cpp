@@ -5,6 +5,7 @@
 #endif
 
 using namespace std;
+using pii = pair<int, int>;
 
 int main() {
   ios::sync_with_stdio(0);
