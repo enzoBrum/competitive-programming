@@ -1,28 +1,25 @@
 #include <bits/stdc++.h>
 
-#ifdef DEBUG
-#define PRINT(s) std::cout << s << '\n';
-#endif
-
 using namespace std;
 using pii = pair<int, int>;
 
-void dfs(vector<vector<int>> &adj, vector<bool> &visited,
-         vector<pii> &ask_money, int u, vector<bool> &lose_money) {
+void bfs(vector<vector<int>> &adj, vector<bool> &visited,
+         int u, int ignored = -1) {
+  queue<int> q;
+
+  q.push(u);
   visited[u] = true;
-  int og_index = -1;
+  int og_u = u;
+  while (!q.empty()) {
+    auto u = q.front();
+    q.pop();
 
-  auto &[ua, ub] = ask_money[u];
+    for (auto& v : adj[u]) {
+      if (visited[v] || v == ignored) continue;
 
-  if (visited[ua] || visited[ub])
-    lose_money[u] = true;
-
-  for (int i = 0; i < adj[u].size(); ++i) {
-    int v = adj[u][i];
-    if (visited[v])
-      continue;
-    else
-      dfs(adj, visited, ask_money, v, lose_money);
+      visited[v] = true;
+      q.push(v);
+    }
   }
 }
 
@@ -36,7 +33,7 @@ int main() {
 
   vector<vector<int>> adj(n);
   vector<pii> ask_money(n);
-  vector<int> in_vertices(n);
+  vector<vector<int>> in_vertices(n);
   for (int i = 0; i < n; ++i) {
     int a, b;
     cin >> a >> b;
@@ -44,16 +41,22 @@ int main() {
     b--;
 
     ask_money[i] = {a, b};
-    adj[i].push_back(a);
-    adj[i].push_back(b);
-    in_vertices[a]++;
-    in_vertices[b]++;
+    adj[a].push_back(i);
+    adj[b].push_back(i);
   }
 
   vector<bool> lose_money(n, false);
   for (int i = 0; i < n; ++i) {
-    vector<bool> visited(n, false);
-    dfs(adj, visited, ask_money, i, lose_money);
+    vector<bool> visited(n, false), visited_a(n, false), visited_b(n, false);
+    auto[a, b] = ask_money[i];
+    bfs(adj, visited, i);
+    bfs(adj, visited_a, a, i);
+    bfs(adj, visited_b, b, i);
+
+    for (int j = 0; j < n && !lose_money[i]; ++j) {
+      if (visited_a[j] && visited_b[j] && visited[j])
+        lose_money[i] = true;
+    }
   }
 
   for (auto b : lose_money)

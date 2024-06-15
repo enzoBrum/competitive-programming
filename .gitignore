@@ -5,3 +5,6 @@ a.out
 submit.py
 
 .direnv
+*.zip
+contest_packages
+io/
