@@ -20,8 +20,8 @@ struct SegmentTree {
     build(1, 0, n - 1, vec);
   }
 
-  map<ull, int> merge(const map<ull, int> &a, const map<ull, int> &b) {
-    map<ull, int> mp;
+  map<int, int> merge(const map<int, int> &a, const map<int, int> &b) {
+    map<int, int> mp;
     for (auto &[k, v] : a)
       mp[k] += v;
     for (auto &[k, v] : b)
@@ -54,15 +54,15 @@ struct SegmentTree {
     lazy[p].clear();
   }
 
-  map<ull, int> query(int i, int j) { return query(1, 0, n - 1, i, j); }
+  map<int, int> query(int i, int j) { return query(1, 0, n - 1, i, j); }
 
   void update(int i, int j, int v) { update(1, 0, n - 1, i, j, v); }
 
-  vector<map<ull, int>> tree, lazy;
+  vector<map<int, int>> tree, lazy;
   int n;
 
 private:
-  map<ull, int> query(int p, int l, int r, int i, int j) {
+  map<int, int> query(int p, int l, int r, int i, int j) {
     propagate(p, l, r);
     if (i > j) // valor impossível. merge() deve ignorá-lo
       return {};
@@ -74,22 +74,32 @@ private:
                  query(right(p), m + 1, r, max(i, m + 1), j));
   }
 
-  void update(int p, int l, int r, int i, int j, int v) {
+  pair<map<int, int>, int> update(int p, int l, int r, int i, int j, int v) {
     if (l > r)
-      return;
+      return {map<int, int>(), tree[p][v]};
     if (l == i && r == j) {
+      auto old_mp = tree[p];
+      old_mp.erase(v);
       int old_sz = tree[p].size();
       tree[p].clear();
       tree[p][v] = old_sz;
       lazy[p] = tree[p];
-      return;
+      return {old_mp, old_sz};
     }
 
     propagate(p, l, r);
     int m = (l + r) / 2;
-    update(left(p), l, m, i, min(j, m), v);
-    update(right(p), m + 1, r, max(l, m + 1), j, v);
-    tree[p] = merge(tree[left(p)], tree[right(p)]);
+    auto [amp, asz] = update(left(p), l, m, i, min(j, m), v);
+    auto [bmp, bsz] = update(right(p), m + 1, r, max(l, m + 1), j, v);
+
+    for (auto &[k, v] : amp)
+      tree[p][k] -= v;
+    for (auto &[k, v] : bmp) {
+      tree[p][k] -= v;
+      amp[k] += v;
+    }
+    tree[p][v] = asz + bsz;
+    return {amp, asz + bsz};
   }
 };
 
@@ -98,20 +108,20 @@ int main() {
   cin.tie(0);
   cout.tie(0);
 
-  int l, c, n;
+  ll l, c, n;
   cin >> l >> c >> n;
 
   vector<int> og(l, 1);
 
   SegmentTree seg(og);
   for (int i = 0; i < n; ++i) {
-    int p, x, a, b;
+    ll p, x, a, b;
     cin >> p >> x >> a >> b;
 
     auto result = seg.query(0, n - 1);
-    int s = result[p];
+    ll s = result[p];
 
-    int r = (a + (s + b) * (s + b)) % l;
+    ll r = (a + (s + b) * (s + b)) % l;
     l = (a + s * s) % l;
 
     seg.update(min(l, r), max(l, r), x);
