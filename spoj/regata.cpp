@@ -10,7 +10,7 @@ const double EPS = 1e-9;
 
 inline bool eq(int a, int b) { return a == b; }
 
-inline bool eq(double a, double b) { return abs(a - b) > 1e-6; }
+inline bool eq(double a, double b) { return abs(a - b) < 1e-6; }
 
 template <typename T> struct Point {
   T x, y;
@@ -30,6 +30,9 @@ template <typename T> struct Point {
   friend istream &operator>>(istream &stream, Point<T> &p) {
     stream >> p.x >> p.y;
     return stream;
+  }
+  operator Point<double>() const {
+    return Point<double>((double) x, (double) y);
   }
 };
 
@@ -73,8 +76,12 @@ template <typename T> struct Line {
     double min_y = min(p1.y, p2.y), max_y = max(p1.y, p2.y);
     if (p.x < p1.x || p.x > p2.x || p.y < min_y || p.y > max_y)
       return false;
+    if (p == p1 || p == p2)
+      return false;
     min_y = min(other.p1.y, other.p2.y), max_y = max(other.p1.y, other.p2.y);
     if (p.x < other.p1.x || p.x > other.p2.x || p.y < min_y || p.y > max_y)
+      return false;
+    if (p == (Point<double>)other.p1 || p == (Point<double>)other.p2)
       return false;
 
     return true;
@@ -112,8 +119,7 @@ double dijkstra(vector<vector<pair<double, int>>> &adj) {
 bool has_intersection(int ignore, Line<int> &l1, vector<Line<int>> &lines,
                       int ignore2 = -2) {
   for (int i = 0; i < lines.size(); ++i)
-    if (i != ignore && i != ignore2)
-      if (l1.intersection(lines[i]))
+    if (l1.intersection(lines[i]))
         return true;
   return false;
 }
@@ -160,39 +166,39 @@ int main() {
     int sz = n * 2 + 1;
     for (int i = 0; i < lines.size(); ++i) {
       Line<int> l_end1(lines[i].p1, p_end), l_end2(lines[i].p2, p_end);
-      if (has_intersection(i, l_end1, lines)) {
+      if (!has_intersection(i, l_end1, lines)) {
         double d = distance(lines[i].p1, p_end);
         adj[i + 1].push_back({d, sz});
         adj[sz].push_back({d, i + 1});
       }
-      if (has_intersection(i, l_end2, lines)) {
+      if (!has_intersection(i, l_end2, lines)) {
         double d = distance(lines[i].p2, p_end);
         adj[i + 2].push_back({d, sz});
         adj[sz].push_back({d, i + 2});
       }
 
-      for (int j = 0; j < i; ++j) {
+      for (int j = 0; j < lines.size(); ++j) {
         if (j == i)
           continue;
 
         Line<int> l1(lines[i].p1, lines[j].p1), l2(lines[i].p1, lines[j].p2),
             l3(lines[i].p2, lines[j].p1), l4(lines[i].p2, lines[j].p2);
-        if (has_intersection(i, l1, lines, j)) {
+        if (!has_intersection(i, l1, lines, j)) {
           double d = distance(l1.p1, l1.p2);
           adj[i + 1].push_back({d, j + 1});
           adj[j + 1].push_back({d, i + 1});
         }
-        if (has_intersection(i, l2, lines, j)) {
+        if (!has_intersection(i, l2, lines, j)) {
           double d = distance(l2.p1, l2.p2);
           adj[i + 1].push_back({d, j + 2});
           adj[j + 2].push_back({d, i + 1});
         }
-        if (has_intersection(i, l3, lines, j)) {
+        if (!has_intersection(i, l3, lines, j)) {
           double d = distance(l3.p1, l3.p2);
           adj[i + 2].push_back({d, j + 1});
           adj[j + 1].push_back({d, i + 2});
         }
-        if (has_intersection(i, l4, lines, j)) {
+        if (!has_intersection(i, l4, lines, j)) {
           double d = distance(l4.p1, l4.p2);
           adj[i + 2].push_back({d, j + 2});
           adj[j + 2].push_back({d, i + 2});
