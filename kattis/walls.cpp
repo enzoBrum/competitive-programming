@@ -46,8 +46,8 @@ int main() {
   vector<vector<int>> circles_to_walls(n);
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < 4; ++j) {
-      int xdist = cranes[i].first - centers[j].first;
-      int ydist = cranes[i].second - centers[j].second;
+      double xdist = cranes[i].first - centers[j].first;
+      double ydist = cranes[i].second - centers[j].second;
       if ( sqrt(xdist*xdist + ydist * ydist) - r <= 1e-12 )
         circles_to_walls[i].push_back(j);
     }
