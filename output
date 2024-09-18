@@ -1,15 +1,8 @@
-not
-not
-not
-not
-tautology
-not
-tautology
-tautology
-tautology
-tautology
-not
-tautology
-tautology
-tautology
+(1+(2*3+4))
+(1+2*(3+4))
+(1+2*3+4)
+1+(2*(3+4))
+1+(2*3+4)
+1+2*(3+4)
+1+2*3+4
 
