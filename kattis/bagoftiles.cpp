@@ -25,7 +25,18 @@ O(N * 2 ** (N/2)) meet in the middle
 
 */
 
-ll dp[10001][31][31];
+int dp[2][10'000 * 30 + 2];
+
+void gen_subsets(vector<int> &labels, int begin, int end, int n) {
+  int limit = 1 << (end - begin);
+
+  for (int mask = 0; mask < limit; ++mask) {
+    int cur_sum = 0;
+    for (int j = 0; j < end - begin; ++j)
+      if ((mask & (1 << j)))
+        cur_sum += labels[begin + j];
+  }
+}
 
 int main() {
   ios::sync_with_stdio(0);
@@ -45,6 +56,10 @@ int main() {
     int n, t;
     cin >> n >> t;
 
+    int sum = accumulate(all(labels), 0);
     memset(dp, 0, sizeof(dp));
+    memset(memo, 0, sizeof(memo));
+
+    int mid = labels.size() / 2;
   }
 }
