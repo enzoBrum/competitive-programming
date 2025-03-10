@@ -71,8 +71,8 @@ struct Range {
 };
  
  
-unordered_map<int, int> normalize(vector<Range> vec) {
-    unordered_map<int, int> mp;
+map<int, int> normalize(vector<Range> vec) {
+    map<int, int> mp;
     int count = 1;
  
     sort(vec.begin(), vec.end(), [](Range& a, Range& b){return (a.right==b.right)? a.left <b.left : a.right < b.right;});
