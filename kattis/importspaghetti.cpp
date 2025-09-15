@@ -66,7 +66,7 @@ int main() {
         }
   
   //for (int i = 0; i < n; ++i)
-  //  cout << is[i] << " -> " << d[i][i] << endl;
+  //  cout << i[i] << " -> " << d[i][i] << endl;
   int shortest_cycle = 0;
   for (int i = 1; i < n; ++i)
     if (d[i][i] < d[shortest_cycle][shortest_cycle])

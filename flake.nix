@@ -15,6 +15,7 @@
             clang-tools
             lldb
             gdb
+            pypy3
             (pkgs.python313.withPackages (python-pkgs: [
               python-pkgs.requests
               python-pkgs.lxml
