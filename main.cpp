@@ -75,6 +75,7 @@ bool active_vertices[7];
 bool matrix[7][7];
 int deg[7];
 bool visited[7];
+queue<int> q;
 
 /**
 
@@ -130,7 +131,6 @@ bool is_valid(int mask) {
   for (int i = 1; i <= 6; ++i) {
     if (!active_vertices[i])
       continue;
-    queue<int> q;
     q.push(i);
 
     visited[i] = true;
